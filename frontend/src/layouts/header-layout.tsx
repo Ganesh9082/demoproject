@@ -1,3 +1,4 @@
+import React from 'react';
 import ThemeToggle from '@/components/theme-toggle-button';
 import AddIcon from '@/assets/svg/add-icon-white.svg';
 import LogOutIcon from '@/assets/svg/logout-icon.svg';
@@ -14,17 +15,18 @@ import userState from '@/utils/user-state';
 function header() {
   const navigate = useNavigate();
   const { token, loading } = useAuthData();
+  const user = userState.getUser();
 
   const handleLogout = async () => {
     try {
-      const response = axiosInstance.post('/api/auth/signout')
+      const response = axiosInstance.post('/api/auth/signout');
       toast.promise(response, {
         pending: 'Wait ...',
         success: {
           render({ data }) {
-            userState.removeUser()
+            userState.removeUser();
             navigate('/');
-            return data?.data?.message
+            return data?.data?.message;
           },
         },
         error: {
@@ -34,13 +36,12 @@ function header() {
                 return data?.response?.data?.message;
               }
             }
-            return "Signout failed"
+            return 'Signout failed';
           },
         },
-      }
-      )
+      });
 
-      return (await response).data
+      return (await response).data;
     } catch (error) {
       if (isAxiosError(error)) {
         console.error(error.response?.data?.message || 'An error occurred');
@@ -58,7 +59,7 @@ function header() {
           <div className="flex cursor-text items-center justify-between text-2xl font-semibold">
             WanderLust
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div className="flex items-center justify-end px-4 sm:px-20">
               <ThemeToggle />
             </div>
@@ -67,8 +68,19 @@ function header() {
                 <Loader />
               ) : token ? (
                 <div className="flex gap-2">
+                  {user?.role === 'ADMIN' && (
+                    <button
+                      className="active:scale-click hidden rounded border border-slate-50 px-4 py-2 hover:bg-slate-500/25 md:inline-block"
+                      onClick={() => {
+                        navigate('/admin/blogs');
+                      }}
+                    >
+                      Dashboard
+                    </button>
+                  )}
+
                   <button
-                    className="active:scale-click rounded border border-slate-50 px-4 py-2 hidden hover:bg-slate-500/25 md:inline-block"
+                    className="active:scale-click hidden rounded border border-slate-50 px-4 py-2 hover:bg-slate-500/25 md:inline-block"
                     onClick={() => {
                       navigate('/add-blog');
                     }}
@@ -76,7 +88,7 @@ function header() {
                     Create post
                   </button>
                   <button
-                    className="active:scale-click rounded border border-slate-50 px-4 py-2 hidden hover:bg-slate-500/25 md:inline-block"
+                    className="active:scale-click hidden rounded border border-slate-50 px-4 py-2 hover:bg-slate-500/25 md:inline-block"
                     onClick={() => {
                       handleLogout();
                     }}
@@ -104,7 +116,7 @@ function header() {
                 <div className="flex">
                   {' '}
                   <button
-                    className="active:scale-click rounded border border-slate-50 px-4 py-2 hidden hover:bg-slate-500/25 md:inline-block"
+                    className="active:scale-click hidden rounded border border-slate-50 px-4 py-2 hover:bg-slate-500/25 md:inline-block"
                     onClick={() => {
                       navigate('/signin');
                     }}
